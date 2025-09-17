@@ -1,0 +1,7 @@
+{
+  "Name": "cloudzone-frontend-oac",
+  "Description": "OAC for S3 frontend",
+  "SigningProtocol": "sigv4",
+  "SigningBehavior": "always",
+  "OriginAccessControlOriginType": "s3"
+}

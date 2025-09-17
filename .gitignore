@@ -1,0 +1,124 @@
+# -----------------------------
+# Global OS / IDE junk
+# -----------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+logs/
+*.tmp
+*.swp
+*.swo
+*.orig
+*.bak
+.idea/
+.vscode/
+.vscode/*
+!.vscode/extensions.json
+
+# -----------------------------
+# Env / secrets (root + any subdir)
+# -----------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.crt
+
+# AWS credentials (never commit)
+.aws/
+**/aws-credentials*
+**/credentials
+
+# -----------------------------
+# Frontend (Vite/React)
+# -----------------------------
+node_modules/
+**/node_modules/
+# Build output
+dist/
+**/dist/
+# Vite cache
+.vite/
+**/.vite/
+# Other common caches
+.cache/
+.parcel-cache/
+.eslintcache
+
+# -----------------------------
+# Backend (Python/Lambda)
+# -----------------------------
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Lambda packaging artifacts
+*.zip
+**/*.zip
+# if you keep bundles under backend/dist
+backend/dist/
+# but keep source code
+!backend/app/**
+!backend/interfaces/**
+!backend/infrastructure/**
+
+# -----------------------------
+# Testing / coverage
+# -----------------------------
+coverage/
+.coverage
+.coverage.*
+.pytest_cache/
+junit*.xml
+reports/
+
+# -----------------------------
+# Infra (keep configs, ignore tool state)
+# -----------------------------
+# Terraform
+.terraform/
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*.tfvars
+*.tfvars.json
+
+# AWS SAM / CDK
+.aws-sam/
+cdk.out/
+cdk.context.json
+
+# CloudFormation change sets / temp
+*.template
+*.template.json
+*.template.yaml
+
+# -----------------------------
+# Project-specific
+# -----------------------------
+# screenshots (commit only what you want)
+docs/screenshots/*
+# allow readme images if you want:
+!docs/screenshots/README-*.png
+
+# lockfiles: keep them (do NOT ignore)
+#!package-lock.json
+#!pnpm-lock.yaml
+#!yarn.lock

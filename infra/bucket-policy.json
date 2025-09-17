@@ -1,0 +1,29 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowCloudFrontServicePrincipalReadOnlyOAC",
+      "Effect": "Allow",
+      "Principal": { "Service": "cloudfront.amazonaws.com" },
+      "Action": ["s3:GetObject"],
+      "Resource": "arn:aws:s3:::cloudzone-frontend-010255283398/*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::010255283398:distribution/E3LXXHJ3O92XLJ"
+        }
+      }
+    },
+    {
+      "Sid": "AllowListForCloudFrontOAC",
+      "Effect": "Allow",
+      "Principal": { "Service": "cloudfront.amazonaws.com" },
+      "Action": ["s3:ListBucket"],
+      "Resource": "arn:aws:s3:::cloudzone-frontend-010255283398",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::010255283398:distribution/E3LXXHJ3O92XLJ"
+        }
+      }
+    }
+  ]
+}

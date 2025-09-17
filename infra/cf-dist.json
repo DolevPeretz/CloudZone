@@ -1,0 +1,25 @@
+{
+  "CallerReference": "cloudzone-frontend-001",
+  "Comment": "CloudZone Frontend",
+  "Enabled": true,
+  "DefaultRootObject": "index.html",
+  "Origins": {
+    "Items": [
+      {
+        "Id": "s3-frontend",
+        "DomainName": "cloudzone-frontend-010255283398.s3.eu-central-1.amazonaws.com",
+        "S3OriginConfig": { "OriginAccessIdentity": "" },
+        "OriginAccessControlId": "E1NRBFW21E1LWV"
+      }
+    ],
+    "Quantity": 1
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "s3-frontend",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "AllowedMethods": { "Quantity": 2, "Items": ["GET", "HEAD"] },
+    "Compress": true,
+    "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6"
+  },
+  "PriceClass": "PriceClass_100"
+}
