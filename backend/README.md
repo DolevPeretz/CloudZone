@@ -78,10 +78,6 @@ aws dynamodb delete-item --table-name customer_ids --key '{"id":{"S":"user_123"}
 - Describe table: [Paste output]
 - Example put/get/delete: [Paste outputs]
 
-### Screenshots
-
-📸 Add AWS Console screenshot of table.
-
 ---
 
 ## Lambda Functions
@@ -100,7 +96,7 @@ List of functions:
 - Packaging: [Paste command/output]
 - Update function code: [Paste command/output]
 
-📸 Screenshot of deployed Lambdas.
+📸 See [`docs/screenshots/dynamodb-table.png`](./docs/FUNCTION.png)
 
 ---
 
@@ -158,7 +154,7 @@ done
 
 ### Architecture
 
-📸 See `docs/diagrams/mission3-architecture.png`  
+📸 See `docs/diagrams/mission3-architecture.png` (./docs/mission3-architecture.png)
 Flow: **API Gateway → EventBridge → Step Functions → (ValidateExists → Choice → [LogEvent | InsertId]) → DynamoDB → CloudWatch → SNS**
 
 ### State Machine (ASL)
@@ -175,7 +171,9 @@ File: `backend/stepfunctions/customers-workflow.asl.json` (example):
 - Example input (existing ID) → LogEvent path.
 - Example invalid input → Failure.
 
-📸 Screenshot of Step Functions execution graph.
+📸 See `docs/diagrams/WORKFLOW INSERT ID.png` (./docs/WORKFLOW INSERT ID.png)
+📸 See `docs/diagrams/WORKFLOW EDITOR.png` (./docs/WORKFLOW EDITOR.png)
+📸 See `docs/diagrams/WORKFLOW FAILED.png` (./docs/WORKFLOW FAILED.png)
 
 ### EventBridge Triggers
 
@@ -262,6 +260,8 @@ aws cloudwatch put-metric-alarm   --alarm-name StepFunctionExecutionFailures   -
 **EMAIL**
 
 - Topic: `arn:aws:sns:eu-central-1:<ACCOUNT_ID>:alerts` (confirm email subscription)
+  📸 See `docs/diagrams/EMAIL.png` (./docs/EMAIL.png)
+  📸 See `docs/diagrams/Alarms.png` (./docs/Alarms.png)
 
 ---
 
