@@ -67,6 +67,43 @@ aws dynamodb get-item    --table-name customer_ids --key '{"id":{"S":"user_123"}
 aws dynamodb delete-item --table-name customer_ids --key '{"id":{"S":"user_123"}}' --region eu-central-1
 ```
 
+--
+
+**Table Name:** `customer_ids`  
+**Partition Key:** `id (String)`
+
+### CLI Commands
+
+- Create table: [Paste command + output]
+- Describe table: [Paste output]
+- Example put/get/delete: [Paste outputs]
+
+### Screenshots
+
+📸 Add AWS Console screenshot of table.
+
+---
+
+## Lambda Functions
+
+List of functions:
+
+- `put_customer_id` – insert ID
+- `get_customer_id` – check ID
+- `delete_customer_id` – delete ID
+- `validate_exists` – helper for workflow
+- `log_event` – log branch
+- `insert_id` – insert branch
+
+### Deployment
+
+- Packaging: [Paste command/output]
+- Update function code: [Paste command/output]
+
+📸 Screenshot of deployed Lambdas.
+
+---
+
 ---
 
 ## API Contract
@@ -128,41 +165,17 @@ Flow: **API Gateway → EventBridge → Step Functions → (ValidateExists → C
 
 File: `backend/stepfunctions/customers-workflow.asl.json` (example):
 
-```json
-{
-  "Comment": "Customer ID workflow",
-  "StartAt": "ValidateExists",
-  "States": {
-    "ValidateExists": {
-      "Type": "Task",
-      "Resource": "arn:aws:lambda:eu-central-1:<ACCOUNT_ID>:function:validate_exists",
-      "ResultPath": "$.validate",
-      "Next": "Exists?"
-    },
-    "Exists?": {
-      "Type": "Choice",
-      "Choices": [
-        {
-          "Variable": "$.validate.exists",
-          "BooleanEquals": true,
-          "Next": "LogEvent"
-        }
-      ],
-      "Default": "InsertId"
-    },
-    "LogEvent": {
-      "Type": "Task",
-      "Resource": "arn:aws:lambda:eu-central-1:<ACCOUNT_ID>:function:log_event",
-      "End": true
-    },
-    "InsertId": {
-      "Type": "Task",
-      "Resource": "arn:aws:lambda:eu-central-1:<ACCOUNT_ID>:function:insert_id",
-      "End": true
-    }
-  }
-}
-```
+### Flow
+
+`ValidateExists → Choice → [LogEvent | InsertId]`
+
+### Executions
+
+- Example input (new ID) → Insert path.
+- Example input (existing ID) → LogEvent path.
+- Example invalid input → Failure.
+
+📸 Screenshot of Step Functions execution graph.
 
 ### EventBridge Triggers
 
@@ -246,7 +259,7 @@ Target: Step Functions (StartExecution).
 aws cloudwatch put-metric-alarm   --alarm-name StepFunctionExecutionFailures   --metric-name ExecutionsFailed   --namespace AWS/States   --dimensions Name=StateMachineArn,Value=<STATE_MACHINE_ARN>   --statistic Sum --period 60 --evaluation-periods 1 --threshold 1   --comparison-operator GreaterThanOrEqualToThreshold   --alarm-actions <SNS_TOPIC_ARN>
 ```
 
-**SNS**
+**EMAIL**
 
 - Topic: `arn:aws:sns:eu-central-1:<ACCOUNT_ID>:alerts` (confirm email subscription)
 
