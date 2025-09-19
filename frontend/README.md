@@ -226,3 +226,13 @@ postcss.config.js        # { plugins: { '@tailwindcss/postcss': {} } }
 ## License
 
 For evaluation purposes only.
+
+### SPA Routing (Optional)
+
+To support client-side routing (React SPA), CloudFront **custom error pages** were configured:
+
+- **403 → /index.html (200)**
+- **404 → /index.html (200)**
+
+This ensures that any non-existing path (e.g. `/settings`, `/profile`) returns the main `index.html` and React Router handles the route correctly.  
+Without this, CloudFront would return the raw S3 XML error (`NoSuchKey`).

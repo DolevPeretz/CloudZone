@@ -119,3 +119,9 @@ repo-root/
 ## License
 
 For evaluation purposes only.
+
+## Screenshots
+
+### Main UI
+
+![Frontend UI](docs/screenshots/CLIENT.png)
