@@ -320,3 +320,221 @@ Additional materials are stored under the `backend/docs/` folder:
 - **EventBridge Rule(s)**: `customer-scan-schedule` / `customer-created-to-sfn`
 - **CloudFront URL (frontend)**: https://d2wjdcjivl50hy.cloudfront.net
 - **API Gateway (prod stage)**: https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod
+
+---
+
+## Mission 3 – Event-Driven Step Functions
+
+### State Machine
+
+- **Flow:** `ValidateExists → Choice (exists?) → [AlreadyExists | InsertId]`
+- Manual tests:
+  - Input `{ "id": "demo-123" }` → first run inserts into DynamoDB
+  - Input `{ "id": "demo-123" }` → second run follows AlreadyExists branch
+
+📸 See `backend/docs/screenshots/WORKFLOW INSERT ID.png`  
+📸 See `backend/docs/screenshots/WORKFLOW EXSISTS.png`
+
+---
+
+### EventBridge Trigger
+
+- **Option A:** Scheduled rule (`rate(5 minutes)`) → triggers workflow with static input.
+- **Option B (preferred):** On successful `PUT /customers/{id}`, Lambda publishes event to EventBridge:
+
+```json
+{
+  "source": "customer.api",
+  "detail-type": "CustomerCreated",
+  "detail": { "id": "user_123" }
+}
+```
+
+---
+
+# Mission 3 – Event-Driven Step Functions
+
+## Architecture
+
+📸 See [`docs/diagrams/mission3-architecture.png`](./docs/diagrams/mission3-architecture.png)
+
+**Flow:**  
+API Gateway → EventBridge → Step Functions → (ValidateExists → Choice → [LogEvent | InsertId]) → DynamoDB → CloudWatch (Logs, Alarms) → SNS (email notification).
+
+---
+
+## State Machine (ASL)
+
+[`backend/stepfunctions/customers-workflow.asl.json`](../backend/stepfunctions/customers-workflow.asl.json)
+
+```json
+{
+  "Comment": "Customer ID workflow",
+  "StartAt": "ValidateExists",
+  "States": {
+    "ValidateExists": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:eu-central-1:123456789012:function:validate_exists",
+      "ResultPath": "$.validate",
+      "Next": "Exists?"
+    },
+    "Exists?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.validate.exists",
+          "BooleanEquals": true,
+          "Next": "LogEvent"
+        }
+      ],
+      "Default": "InsertId"
+    },
+    "LogEvent": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:eu-central-1:123456789012:function:log_event",
+      "End": true
+    },
+    "InsertId": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:eu-central-1:123456789012:function:insert_id",
+      "End": true
+    }
+  }
+}
+```
+
+---
+
+## IAM Roles & Policies
+
+- **Step Functions Execution Role** (invoke Lambdas)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "lambda:InvokeFunction",
+      "Resource": [
+        "arn:aws:lambda:eu-central-1:123456789012:function:validate_exists",
+        "arn:aws:lambda:eu-central-1:123456789012:function:log_event",
+        "arn:aws:lambda:eu-central-1:123456789012:function:insert_id"
+      ]
+    }
+  ]
+}
+```
+
+- **EventBridge to Step Functions Role** (start executions)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "states:StartExecution",
+      "Resource": "arn:aws:states:eu-central-1:123456789012:stateMachine:customers-workflow"
+    }
+  ]
+}
+```
+
+---
+
+## EventBridge Rules
+
+### Option A – Scheduled Rule
+
+```bash
+aws events put-rule   --name customer-scan-schedule   --schedule-expression "rate(5 minutes)"
+
+aws events put-targets   --rule customer-scan-schedule   --targets "Id"="sfn1","Arn"="<STATE_MACHINE_ARN>","RoleArn"="<ROLE_ARN>","Input"='{"id":"scheduled-check"}'
+```
+
+### Option B – API-driven Event (preferred)
+
+Inside `put_customer_id` Lambda:
+
+```python
+import boto3, json
+
+client = boto3.client("events")
+client.put_events(Entries=[{
+  "Source": "customer.api",
+  "DetailType": "CustomerCreated",
+  "Detail": json.dumps({"id": id_value})
+}])
+```
+
+EventBridge pattern:
+
+```json
+{ "source": ["customer.api"], "detail-type": ["CustomerCreated"] }
+```
+
+Target: Step Functions → StartExecution.
+
+---
+
+## CloudWatch Monitoring & Alarms
+
+### Metrics
+
+- **Step Functions**: `ExecutionsFailed`, `ExecutionsTimedOut`, `ExecutionsThrottled`
+- **Lambda**: `Errors`, `Throttles`
+
+### Example Alarm (CLI)
+
+```bash
+aws cloudwatch put-metric-alarm   --alarm-name StepFunctionExecutionFailures   --metric-name ExecutionsFailed   --namespace AWS/States   --dimensions Name=StateMachineArn,Value=<STATE_MACHINE_ARN>   --statistic Sum   --period 60   --evaluation-periods 1   --threshold 1   --comparison-operator GreaterThanOrEqualToThreshold   --alarm-actions <SNS_TOPIC_ARN>
+```
+
+### SNS Topic
+
+- Topic: `arn:aws:sns:eu-central-1:123456789012:alerts`
+- Email subscription: confirm via link in email.
+
+---
+
+## Testing & Validation
+
+### Manual Execution (Console/CLI)
+
+```bash
+aws stepfunctions start-execution   --state-machine-arn "<STATE_MACHINE_ARN>"   --input '{"id":"demo-123"}'
+```
+
+- **First run:** ID inserted → DynamoDB.
+- **Second run:** ID already exists → LogEvent branch.
+- **Invalid input:** execution fails → Alarm triggers → SNS email.
+
+### End-to-End via API
+
+```bash
+curl -X PUT "https://<api-id>.execute-api.eu-central-1.amazonaws.com/prod/customers/demo-123"   -H "x-api-key: <API_KEY>"
+```
+
+- EventBridge rule forwards event → Step Functions workflow runs.
+
+---
+
+## Screenshots
+
+Saved in `backend/docs/screenshots/`:
+
+- `workflow-insert.png` → Insert branch execution
+- `workflow-exists.png` → AlreadyExists branch
+- `eventbridge-rule.png` → EventBridge → Step Functions target
+- `cloudwatch-logs.png` → Execution logs
+- `alarm-in-alarm.png` / `alarm-ok.png` → CloudWatch alarms
+- `sns-email.png` → Email notification received
+
+---
+
+## Outputs
+
+- **State Machine ARN:** `arn:aws:states:eu-central-1:123456789012:stateMachine:customers-workflow`
+- **EventBridge Rules:** `customer-scan-schedule`, `customer-created-to-sfn`
+- **SNS Topic:** `arn:aws:sns:eu-central-1:123456789012:alerts`

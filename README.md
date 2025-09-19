@@ -106,22 +106,33 @@ flowchart TD
 
 ```
 repo-root/
-  README.md            # General overview (this file)
+  README.md            # General overview of the project (tech stack, missions, how to run)
+
   backend/             # Backend code & docs
-    README.md
+    README.md          # Backend documentation (Lambdas, API Gateway, DynamoDB, Step Functions, EventBridge, monitoring)
+
   frontend/            # Frontend code & docs
-    README.md
-  docs/                # Architecture diagrams, screenshots
+    README.md          # Frontend documentation (React app, build & deploy to S3/CloudFront, SPA routing)
+
+  docs/                # Shared documentation
+    diagrams/          # Architecture diagrams (backend, frontend, workflows)
+    screenshots/       # Screenshots of executions, logs, alarms, deployed app
+
+  infra/               # Infrastructure as Code (IaC), configs or deployment scripts
+                       # (e.g., CloudFormation, SAM, Terraform, or helper scripts)
+
+  backups/             # Backup files, previous versions, or exports
+                       # (not part of main project, for local/dev use only)
+
+  .gitignore           # Git ignore rules
+
+
 ```
 
 ---
-
-## License
-
-For evaluation purposes only.
 
 ## Screenshots
 
 ### Main UI
 
-![Frontend UI](docs/screenshots/CLIENT.png)
+[](./docs/screenshots/CLIENT.png)
