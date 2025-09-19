@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: CloudZone - customer IDs API
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 10
+    MemorySize: 256
+    Tracing: Active
+    Environment:
+      Variables:
+        TABLE_NAME: customer_ids
+    Policies:
+      - DynamoDBCrudPolicy:
+          TableName: customer_ids
+
+Resources:
+  CustomerTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: customer_ids
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  GetCustomerFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: app/handlers/get_customer.handler
+      Events:
+        ApiGET:
+          Type: Api
+          Properties:
+            Path: /customers/{id}
+            Method: GET
+            RestApiId: !Ref HttpApi
+  PutCustomerFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: app/handlers/put_customer.handler
+      Events:
+        ApiPUT:
+          Type: Api
+          Properties:
+            Path: /customers/{id}
+            Method: PUT
+            RestApiId: !Ref HttpApi
+  DeleteCustomerFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: app/handlers/delete_customer.handler
+      Events:
+        ApiDEL:
+          Type: Api
+          Properties:
+            Path: /customers/{id}
+            Method: DELETE
+            RestApiId: !Ref HttpApi
+
+  HttpApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      EndpointConfiguration: REGIONAL
+      Cors:
+        AllowMethods: "'GET,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Api-Key,Authorization,X-Amz-Date,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+
+Outputs:
+  ApiUrl:
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/prod"

@@ -28,7 +28,7 @@ export default function App() {
         <header className="mb-6">
           <h1 className="text-2xl font-bold">Customer IDs Console</h1>
           <p className="text-slate-600">
-            ניהול מזהים: הוספה, בדיקה ומחיקה מול ה־API שלך.
+            Manage IDs: add, check, and delete against your API.
           </p>
         </header>
 
@@ -49,16 +49,17 @@ export default function App() {
           <div className="bg-white/60 rounded-2xl p-4 border border-slate-200">
             <ol className="list-decimal pl-5 space-y-2 text-sm text-slate-700">
               <li>
-                הדביקי למעלה את ה־Invoke URL של API Gateway (Stage: prod) ואת
-                ה־x-api-key אם נדרש.
+                Paste the API Gateway Invoke URL (Stage: <code>prod</code>)
+                above, and the <code>x-api-key</code> if required.
               </li>
               <li>
-                PUT שולח גוף JSON: {`{ id: "..." }`} · GET/DELETE שולחים query
-                param: <code>?id=...</code>.
+                <code>PUT</code> sends a JSON body: {`{ id: "..." }`} ·{" "}
+                <code>GET</code>/<code>DELETE</code> send a query param:{" "}
+                <code>?id=...</code>.
               </li>
               <li>
-                ב-API Gateway הפעילי CORS ל:{" "}
-                <code>GET, PUT, DELETE, OPTIONS</code> + headers:{" "}
+                In API Gateway, enable CORS for{" "}
+                <code>GET, PUT, DELETE, OPTIONS</code> and allow headers:{" "}
                 <code>Content-Type, X-Api-Key</code>.
               </li>
             </ol>

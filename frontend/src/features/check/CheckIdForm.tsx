@@ -29,13 +29,13 @@ export const CheckIdForm: React.FC<{ api: ApiClient }> = ({ api }) => {
       const data = await api.getExists(id.trim());
       const exists = data?.exists === true;
       toast[exists ? "success" : "error"](
-        exists ? "ה-ID קיים" : "ה-ID לא קיים"
+        exists ? "ID exists" : "ID does not exist"
       );
       setStatus({
         kind: exists ? "success" : "info",
         text: exists
-          ? `קיים במערכת (id=${data?.id ?? id})`
-          : `לא קיים (id=${data?.id ?? id})`,
+          ? `Exists in the system (id=${data?.id ?? id})`
+          : `Does not exist (id=${data?.id ?? id})`,
       });
     } catch (err: any) {
       const msg = String(err?.message || err);
@@ -45,11 +45,11 @@ export const CheckIdForm: React.FC<{ api: ApiClient }> = ({ api }) => {
   };
 
   return (
-    <Card title="בדיקת מזהה (GET)">
+    <Card title="Check ID (GET)">
       <form className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
         <LabeledInput
           label="Customer ID"
-          placeholder="למשל: 1234-AB"
+          placeholder="For example: 1234-AB"
           disabled={isSubmitting}
           {...register("id")}
         />
@@ -58,7 +58,7 @@ export const CheckIdForm: React.FC<{ api: ApiClient }> = ({ api }) => {
         )}
         <div className="flex gap-2">
           <Button type="submit" loading={isSubmitting}>
-            בדוק
+            Check
           </Button>
         </div>
       </form>

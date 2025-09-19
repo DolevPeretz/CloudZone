@@ -28,10 +28,10 @@ export const DeleteIdForm: React.FC<{ api: ApiClient }> = ({ api }) => {
     setStatus(null);
     try {
       const data = await api.deleteId(id.trim());
-      toast.success("נמחק (אם היה קיים)");
+      toast.success("Deleted (if it existed)");
       setStatus({
         kind: "success",
-        text: `נמחק (אם היה קיים): ${JSON.stringify(data)}`,
+        text: `Deleted (if it existed): ${JSON.stringify(data)}`,
       });
       reset();
     } catch (err: any) {
@@ -42,11 +42,11 @@ export const DeleteIdForm: React.FC<{ api: ApiClient }> = ({ api }) => {
   };
 
   return (
-    <Card title="מחיקת מזהה (DELETE)">
+    <Card title="Delete ID (DELETE)">
       <form className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
         <LabeledInput
           label="Customer ID"
-          placeholder="למשל: 1234-AB"
+          placeholder="For example: 1234-AB"
           disabled={isSubmitting}
           {...register("id")}
         />
@@ -55,7 +55,7 @@ export const DeleteIdForm: React.FC<{ api: ApiClient }> = ({ api }) => {
         )}
         <div className="flex gap-2">
           <Button type="submit" loading={isSubmitting}>
-            מחק
+            Delete
           </Button>
         </div>
       </form>

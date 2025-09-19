@@ -30,10 +30,10 @@ export const AddIdForm: React.FC<{ api: ApiClient }> = ({ api }) => {
     setStatus(null);
     try {
       const data = await api.putId(id.trim());
-      toast.success("נוסף בהצלחה");
+      toast.success("Added successfully");
       setStatus({
         kind: "success",
-        text: `נוסף בהצלחה: ${JSON.stringify(data)}`,
+        text: `Added successfully: ${JSON.stringify(data)}`,
       });
       reset();
     } catch (err: any) {
@@ -44,11 +44,11 @@ export const AddIdForm: React.FC<{ api: ApiClient }> = ({ api }) => {
   };
 
   return (
-    <Card title="הוספת מזהה (PUT)">
+    <Card title="Add ID (PUT)">
       <form className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
         <LabeledInput
           label="Customer ID"
-          placeholder="למשל: 1234-AB"
+          placeholder="For example: 1234-AB"
           disabled={isSubmitting}
           {...register("id")}
         />
@@ -57,7 +57,7 @@ export const AddIdForm: React.FC<{ api: ApiClient }> = ({ api }) => {
         )}
         <div className="flex gap-2">
           <Button type="submit" loading={isSubmitting}>
-            הוסף
+            Add
           </Button>
         </div>
       </form>
