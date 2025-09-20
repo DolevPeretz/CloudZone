@@ -1,0 +1,55 @@
+{
+  "Comment": "Customers workflow",
+  "StartAt": "ValidateExists",
+  "States": {
+    "ValidateExists": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "validate_exists",
+        "Payload": {
+          "id.$": "$.detail.id"
+        }
+      },
+      "ResultPath": "$.validate",
+      "Next": "Exists?",
+      "ResultSelector": {
+        "exists.$": "$.Payload.exists"
+      }
+    },
+    "Exists?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.validate.exists",
+          "BooleanEquals": true,
+          "Next": "AlreadyExists"
+        },
+        {
+          "Variable": "$.validate.exists",
+          "BooleanEquals": false,
+          "Next": "InsertId"
+        }
+      ],
+      "Default": "InsertId"
+    },
+    "InsertId": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload": {
+          "id.$": "$.detail.id"
+        },
+        "FunctionName": "arn:aws:lambda:eu-central-1:010255283398:function:insert_id:$LATEST"
+      },
+      "Next": "Inserted"
+    },
+    "AlreadyExists": {
+      "Type": "Succeed"
+    },
+    "Inserted": {
+      "Type": "Succeed"
+    }
+  }
+}

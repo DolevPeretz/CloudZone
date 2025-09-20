@@ -96,8 +96,6 @@ List of functions:
 - Packaging: [Paste command/output]
 - Update function code: [Paste command/output]
 
-📸 See [`docs/screenshots/dynamodb-table.png`](./docs/FUNCTION.png)
-
 ---
 
 ---
