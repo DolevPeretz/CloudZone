@@ -31,27 +31,7 @@ npm run dev
 - **CloudFront URL:** [https://d2wjdcjivl50hy.cloudfront.net](https://d2wjdcjivl50hy.cloudfront.net)
 - **API Gateway (Invoke URL / prod):** [https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod](https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod)
 
-> ⚠️ Do not commit real API keys. Keep `.env` out of git and provide `.env.example` instead.
-
 ---
-
-## Environment Variables
-
-You can prefill Settings with build‑time defaults using a `.env` file.
-
-Create `.env` in the project root:
-
-```
-VITE_DEFAULT_API_BASE_URL=https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod
-VITE_DEFAULT_API_KEY=
-```
-
-**.env.example** (commit this file):
-
-```
-VITE_DEFAULT_API_BASE_URL=https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod
-VITE_DEFAULT_API_KEY=
-```
 
 ### How it’s used in code
 
@@ -84,20 +64,6 @@ Required headers from the browser:
 
 - `x-api-key` (if API Key is enabled)
 - `Content-Type: application/json` (for PUT only when sending a body)
-
----
-
-## Local Preview (Production Build)
-
-Before deploying, you can test the production build locally:
-
-```bash
-npm run build
-npm run preview
-# Visit http://localhost:4173 to verify API connectivity before deploying
-```
-
----
 
 ## CORS
 
@@ -161,14 +127,25 @@ This ensures new deployments always load the latest HTML while allowing long cac
 curl -i -X OPTIONS "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/AB_123"   -H "Origin: https://d2wjdcjivl50hy.cloudfront.net"   -H "Access-Control-Request-Method: PUT"   -H "Access-Control-Request-Headers: Content-Type,X-Api-Key"
 
 # PUT – add ID
-curl -i -X PUT "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/AB_123"   -H "x-api-key: <YOUR_API_KEY>"
+curl.exe -i -X PUT "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/AB_123" `
+  -H "Origin: http://localhost:5173" `
+  -H "x-api-key: NlMe8I2fRoS8BEHpi7ok2YgnRqazFwx9KnQqS1K"
 
 # GET – check existence
-curl -i -X GET "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/AB_123"   -H "x-api-key: <YOUR_API_KEY>"
+curl.exe -i -X GET "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/AB_123" `
+  -H "Origin: http://localhost:5173" `
+  -H "x-api-key: NlMe8I2fRoS8BEHpi7ok2YgnRqazFwx9KnQqS1K"
 
 # DELETE – remove ID
-curl -i -X DELETE "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/AB_123"   -H "x-api-key: <YOUR_API_KEY>"
+curl.exe -i -X DELETE "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/AB_123" `
+  -H "Origin: http://localhost:5173" `
+  -H "x-api-key: NlMe8I2fRoS8BEHpi7ok2YgnRqazFwx9KnQqS1K"
+
 ```
+
+![lk](./src/assets/PUT%20+%20FROUNT.png)
+![lk](./src/assets/GET%20+%20FRONT.png)
+![lk](./src/assets/DELETE+FRONT.png)
 
 ---
 
@@ -202,16 +179,6 @@ postcss.config.js        # { plugins: { '@tailwindcss/postcss': {} } }
 - **404**: wrong path (`/customers/{id}` vs `/customer`). Ensure frontend `api.ts` matches your backend.
 - **Env defaults ignored**: `.env` values are only defaults; you can override in Settings (localStorage). Clear localStorage to reapply defaults.
 
----
-
-## Known Limitations
-
-- API authentication uses API Key only (no OAuth/JWT).
-- Deployment is manual (no CI/CD pipeline yet).
-- UI limited to Add / Check / Delete forms only.
-
----
-
 ## Screenshots (to include)
 
 - **Settings** panel filled with Invoke URL + (masked) API Key
@@ -222,10 +189,6 @@ postcss.config.js        # { plugins: { '@tailwindcss/postcss': {} } }
 > Save screenshots under `docs/screenshots/` and reference them here.
 
 ---
-
-## License
-
-For evaluation purposes only.
 
 ### SPA Routing (Optional)
 

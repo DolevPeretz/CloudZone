@@ -79,7 +79,7 @@ flowchart TD
    - Invalidate CloudFront distribution
 
 3. **Testing**
-   - Use provided curl / Postman examples
+   - Use provided curl
    - Verify CORS headers and API Key authentication
    - Confirm workflow execution in Step Functions console
 
@@ -90,17 +90,6 @@ flowchart TD
 - **CloudWatch Logs** enabled on all Lambdas & Step Functions
 - **Metrics & Alarms** configured for API Gateway & Lambda errors
 - **Structured logging** (JSON format) in application code
-
----
-
-## Known Limitations
-
-- Authentication is API Key only (no IAM/OAuth/JWT)
-- Deployment scripts are manual (no CI/CD pipeline yet)
-- Workflow is simplified (validate → insert/log only)
-- No automated integration tests, only unit tests for Lambdas
-
----
 
 ## Repository Structure
 
@@ -119,7 +108,7 @@ repo-root/
     screenshots/       # Screenshots of executions, logs, alarms, deployed app
 
   infra/               # Infrastructure as Code (IaC), configs or deployment scripts
-                       # (e.g., CloudFormation, SAM, Terraform, or helper scripts)
+
 
   backups/             # Backup files, previous versions, or exports
                        # (not part of main project, for local/dev use only)
@@ -135,4 +124,4 @@ repo-root/
 
 ### Main UI
 
-[](./frontend/src/assets/Screenshot%202025-09-20%20222428.png)
+![FR](./frontend/src/assets/Screenshot%202025-09-20%20222428.png)
