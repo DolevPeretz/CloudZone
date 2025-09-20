@@ -95,8 +95,6 @@ List of functions:
 
 ---
 
----
-
 ## API Contract
 
 **Endpoints**
@@ -140,7 +138,7 @@ curl -Method DELETE "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/p
 Package:
 
 ```bash
-zip -r backend/dist/backend_bundle.zip backend/app backend/lambdas
+zip -r backend/dist/backend_bundle.zip backend
 ```
 
 Update functions:
@@ -177,6 +175,7 @@ File: `backend/doc/customers-workflow.asl.json`
 - Example input (existing ID) → LogEvent path.
 - Example invalid input → Failure.
 
+![WORKFLOW INSERT ](./images/INPUT%20EXECUTION.png)
 ![WORKFLOW INSERT ](./images/WORKFLOW%20INSERT%20ID.png)
 ![WORKFLOW EXSISTS](./images/WORKFLOW%20EXSISTS.png)
 ![WORKFLOW FAILED](./images/WORKFLOW%20FAILED.png)
@@ -208,44 +207,6 @@ Rule pattern:
 
 ```json
 { "source": ["customer.api"], "detail-type": ["CustomerCreated"] }
-```
-
-Target: Step Functions (StartExecution).
-
-### IAM (Minimal Snippets)
-
-**SFN execution role → invoke Lambdas**
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "lambda:InvokeFunction",
-      "Resource": [
-        "arn:aws:lambda:eu-central-1:<ACCOUNT_ID>:function:validate_exists",
-        "arn:aws:lambda:eu-central-1:<ACCOUNT_ID>:function:log_event",
-        "arn:aws:lambda:eu-central-1:<ACCOUNT_ID>:function:insert_id"
-      ]
-    }
-  ]
-}
-```
-
-**EventBridge role → start SFN**
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "states:StartExecution",
-      "Resource": "arn:aws:states:eu-central-1:<ACCOUNT_ID>:stateMachine:customers-workflow"
-    }
-  ]
-}
 ```
 
 ---
