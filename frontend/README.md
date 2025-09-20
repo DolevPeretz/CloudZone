@@ -65,16 +65,6 @@ Required headers from the browser:
 - `x-api-key` (if API Key is enabled)
 - `Content-Type: application/json` (for PUT only when sending a body)
 
-## CORS
-
-Ensure API Gateway + Lambda return CORS headers on **OPTIONS and real responses** (200/4xx/5xx):
-
-```
-Access-Control-Allow-Origin: *
-Access-Control-Allow-Methods: GET,PUT,DELETE,OPTIONS
-Access-Control-Allow-Headers: Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token
-```
-
 We centralize these headers in backend helper `resp(...)` so every Lambda response includes them.
 
 ---
@@ -108,17 +98,6 @@ We centralize these headers in backend helper `resp(...)` so every Lambda respon
    ```bash
    aws cloudfront create-invalidation --distribution-id <DIST_ID> --paths "/*"
    ```
-
----
-
-## Cache Control (Best Practice)
-
-- `index.html` → `Cache-Control: no-cache`
-- JS/CSS assets → `Cache-Control: public,max-age=31536000,immutable`
-
-This ensures new deployments always load the latest HTML while allowing long caching of versioned assets.
-
----
 
 ## Testing (cURL)
 
@@ -184,9 +163,6 @@ postcss.config.js        # { plugins: { '@tailwindcss/postcss': {} } }
 - **Settings** panel filled with Invoke URL + (masked) API Key
 - **Add / Check / Delete** success & error states (toasts + status)
 - **CloudFront URL** opened and rendering the app
-- (Optional) **Architecture diagram**: Frontend → API Gateway → Lambda → DynamoDB; EventBridge → Step Functions
-
-> Save screenshots under `docs/screenshots/` and reference them here.
 
 ---
 
