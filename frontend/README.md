@@ -201,8 +201,7 @@ This ensures that any non-existing path (e.g. `/settings`, `/profile`) returns t
 Without this, CloudFront would return the raw S3 XML error (`NoSuchKey`).
 
 ![lk](./src/assets/test%20F%20P.png)
-![lk](./src/assets/F%20EXSIST.png)
-![lk](./src/assets/get%20F.png)
+![lk](./src/assets/TEST%20EXS.png)
 ![lk](./src/assets/DELETE+FRONT.png)
 ![lk](./src/assets/F%20NO.png)
 ![lk](./src/assets/F%20NO%20DEKE.png)
