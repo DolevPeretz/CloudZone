@@ -59,6 +59,7 @@ Check status:
 aws dynamodb describe-table   --table-name customer_ids   --region eu-central-1   --query "Table.TableStatus"
 ```
 
+![DynamoDB Table](./images/TABELS.png)
 Sample ops:
 
 ```bash
@@ -67,7 +68,7 @@ aws dynamodb get-item    --table-name customer_ids --key '{"id":{"S":"user_123"}
 aws dynamodb delete-item --table-name customer_ids --key '{"id":{"S":"user_123"}}' --region eu-central-1
 ```
 
-## [](./images/TABELS.png)
+##
 
 **Table Name:** `customer_ids`  
 **Partition Key:** `id (String)`
@@ -90,7 +91,7 @@ List of functions:
 - `validate_exists` – helper for workflow
 - `log_event` – log branch
 - `insert_id` – insert branch
-  [](./images/LANBADA.png)
+  ![LANBADA](./images/LANBADA.png)
 
 ---
 
@@ -127,10 +128,10 @@ curl -Method DELETE "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/p
 
 ```
 
-[](./images/PUT%20CURL.png)
-[](./images/GET%20CURL.png)
-[](./images/DELETE%20CURL.png)
-[](./images/PUT%20INVALID.png)
+![PUT](./images/PUT%20CURL.png)
+![GET](./images/GET%20CURL.png)
+![DELETE](./images/DELETE%20CURL.png)
+![PUT ERROR](./images/PUT%20INVALID.png)
 
 ---
 
@@ -159,8 +160,8 @@ done
 ### Architecture
 
 Flow: **API Gateway → EventBridge → Step Functions → (ValidateExists → Choice → [LogEvent | InsertId]) → DynamoDB → CloudWatch → SNS**
-[](./images/mission3-architecture.png)
-[](./images/WORKFLOW.png)
+![mission3-architecture](./images/mission3-architecture.png)
+![WORKFLOW](./images/WORKFLOW.png)
 
 ### State Machine (ASL)
 
@@ -176,9 +177,9 @@ File: `backend/doc/customers-workflow.asl.json`
 - Example input (existing ID) → LogEvent path.
 - Example invalid input → Failure.
 
-[](./images/WORKFLOW%20INSERT%20ID.png)
-[](./images/WORKFLOW%20EXSISTS.png)
-[](./images/WORKFLOW%20FAILED.png)
+![WORKFLOW INSERT ](./images/WORKFLOW%20INSERT%20ID.png)
+![WORKFLOW EXSISTS](./images/WORKFLOW%20EXSISTS.png)
+![WORKFLOW FAILED](./images/WORKFLOW%20FAILED.png)
 
 ### EventBridge Triggers
 
