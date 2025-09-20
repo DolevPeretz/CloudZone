@@ -199,3 +199,10 @@ To support client-side routing (React SPA), CloudFront **custom error pages** we
 
 This ensures that any non-existing path (e.g. `/settings`, `/profile`) returns the main `index.html` and React Router handles the route correctly.  
 Without this, CloudFront would return the raw S3 XML error (`NoSuchKey`).
+
+![lk](./src/assets/test%20F%20P.png)
+![lk](./src/assets/F%20EXSIST.png)
+![lk](./src/assets/get%20F.png)
+![lk](./src/assets/DELETE+FRONT.png)
+![lk](./src/assets/F%20NO.png)
+![lk](./src/assets/F%20NO%20DEKE.png)
