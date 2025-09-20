@@ -67,7 +67,7 @@ aws dynamodb get-item    --table-name customer_ids --key '{"id":{"S":"user_123"}
 aws dynamodb delete-item --table-name customer_ids --key '{"id":{"S":"user_123"}}' --region eu-central-1
 ```
 
---
+## [](./images/TABELS.png)
 
 **Table Name:** `customer_ids`  
 **Partition Key:** `id (String)`
@@ -90,11 +90,7 @@ List of functions:
 - `validate_exists` – helper for workflow
 - `log_event` – log branch
 - `insert_id` – insert branch
-
-### Deployment
-
-- Packaging: [Paste command/output]
-- Update function code: [Paste command/output]
+  [](./images/LANBADA.png)
 
 ---
 
@@ -110,21 +106,31 @@ List of functions:
 
 **Headers**
 
-- `x-api-key` (required)
+- `x-api-key` NlMe8JE1ro8SBEHpi7okJ2YgnRqazFwx9knOqSlK
 - `Content-Type: application/json` (for PUT with body)
 
 **Examples**
 
 ```bash
 # PUT create
-curl -X PUT "https://<api-id>.execute-api.eu-central-1.amazonaws.com/prod/customers/user_test"   -H "x-api-key: <API_KEY>"
+curl -Method PUT "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/test_123" -Headers @{ "x-api-key"="NlMe8JE1ro8SBEHpi7okJ2YgnRqazFwx9knOqSlK" }
+curl -Method PUT "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/12" -Headers @{ "x-api-key"="NlMe8JE1ro8SBEHpi7okJ2YgnRqazFwx9knOqSlK" }
+
 
 # GET exists
-curl -X GET "https://<api-id>.execute-api.eu-central-1.amazonaws.com/prod/customers/user_test"   -H "x-api-key: <API_KEY>"
+curl -Method GET "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/test_123" -Headers @{ "x-api-key"="NlMe8JE1ro8SBEHpi7okJ2YgnRqazFwx9knOqSlK" }
+curl -Method GET "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/test_127" -Headers @{ "x-api-key"="NlMe8JE1ro8SBEHpi7okJ2YgnRqazFwx9knOqSlK" }
 
 # DELETE
-curl -X DELETE "https://<api-id>.execute-api.eu-central-1.amazonaws.com/prod/customers/user_test"   -H "x-api-key: <API_KEY>"
+curl -Method DELETE "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/test_123" -Headers @{ "x-api-key"="NlMe8JE1ro8SBEHpi7okJ2YgnRqazFwx9knOqSlK" }
+curl -Method DELETE "https://nve5ktqo18.execute-api.eu-central-1.amazonaws.com/prod/customers/test_127" -Headers @{ "x-api-key"="NlMe8JE1ro8SBEHpi7okJ2YgnRqazFwx9knOqSlK" }
+
 ```
+
+[](./images/PUT%20CURL.png)
+[](./images/GET%20CURL.png)
+[](./images/DELETE%20CURL.png)
+[](./images/PUT%20INVALID.png)
 
 ---
 
@@ -152,12 +158,13 @@ done
 
 ### Architecture
 
-📸 See `docs/diagrams/mission3-architecture.png` (./docs/mission3-architecture.png)
 Flow: **API Gateway → EventBridge → Step Functions → (ValidateExists → Choice → [LogEvent | InsertId]) → DynamoDB → CloudWatch → SNS**
+[](./images/mission3-architecture.png)
+[](./images/WORKFLOW.png)
 
 ### State Machine (ASL)
 
-File: `backend/stepfunctions/customers-workflow.asl.json` (example):
+File: `backend/doc/customers-workflow.asl.json`
 
 ### Flow
 
@@ -169,9 +176,9 @@ File: `backend/stepfunctions/customers-workflow.asl.json` (example):
 - Example input (existing ID) → LogEvent path.
 - Example invalid input → Failure.
 
-📸 See `docs/diagrams/WORKFLOW INSERT ID.png` (./docs/WORKFLOW INSERT ID.png)
-📸 See `docs/diagrams/WORKFLOW EDITOR.png` (./docs/WORKFLOW EDITOR.png)
-📸 See `docs/diagrams/WORKFLOW FAILED.png` (./docs/WORKFLOW FAILED.png)
+[](./images/WORKFLOW%20INSERT%20ID.png)
+[](./images/WORKFLOW%20EXSISTS.png)
+[](./images/WORKFLOW%20FAILED.png)
 
 ### EventBridge Triggers
 
@@ -258,8 +265,9 @@ aws cloudwatch put-metric-alarm   --alarm-name StepFunctionExecutionFailures   -
 **EMAIL**
 
 - Topic: `arn:aws:sns:eu-central-1:<ACCOUNT_ID>:alerts` (confirm email subscription)
-  📸 See `docs/diagrams/EMAIL.png` (./docs/EMAIL.png)
-  📸 See `docs/diagrams/Alarms.png` (./docs/Alarms.png)
+  [](./images/EMAIL.png)
+  [](./images/ALARM.png)
+  [](./images/Alarms.png)
 
 ---
 
