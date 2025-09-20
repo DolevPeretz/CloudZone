@@ -153,6 +153,43 @@ done
 
 ---
 
+## 🔐 API Gateway Security
+
+- **API Key required** – all requests must include `x-api-key` header.
+- **Usage Plan** – attached to the `prod` stage:
+  - Rate limit: **10 requests/second**
+  - Burst limit: **5 requests**
+- **Throttling** – prevents abuse and DoS.
+- **CORS enabled** – for `GET, PUT, DELETE, OPTIONS` with headers `Content-Type, x-api-key`.
+
+📸 Screenshot: API Gateway → Usage Plan → Stage attached to `prod`.
+
+![PUT ERROR](./images/API%20STAGE.png)
+![PUT ERROR](./images/USAGE%20.png)
+
+---
+
+## 🌐 CORS
+
+- **OPTIONS method** added to `/customers/{id}` with Integration Response headers:
+  - `Access-Control-Allow-Origin: *`
+  - `Access-Control-Allow-Headers: Content-Type, x-api-key`
+  - `Access-Control-Allow-Methods: GET, PUT, DELETE, OPTIONS`
+
+![PUT ERROR](./images/CORSS%201.png)
+
+- **Gateway Responses** (`DEFAULT_4XX` and `DEFAULT_5XX`) updated to include:
+  - `Access-Control-Allow-Origin: *`
+
+📸 Screenshot: Gateway Response (DEFAULT_4XX) showing `Access-Control-Allow-Origin`
+![PUT ERROR](./images/4XX.png)
+📸 Screenshot: Gateway Response (DEFAULT_5XX) showing `Access-Control-Allow-Origin`
+![PUT ERROR](./images/5XX.png)
+
+![PUT ERROR](./images/PUT%20+%20CORS.png)
+
+---
+
 ## Mission 3 – Event‑Driven Workflow
 
 ### Architecture
@@ -180,28 +217,23 @@ File: `backend/doc/customers-workflow.asl.json`
 ![WORKFLOW EXSISTS](./images/WORKFLOW%20EXSISTS.png)
 ![WORKFLOW FAILED](./images/WORKFLOW%20FAILED.png)
 
-### EventBridge Triggers
+## ⏰ EventBridge Trigger
 
-**Option A – Schedule**
+The workflow is triggered by an **EventBridge Rule** listening for customer events.
 
-```bash
-aws events put-rule   --name customer-scan-schedule   --schedule-expression "rate(5 minutes)"
+- **Rule name:** CustomerIdSubmitted-to-Workflow
+- **Source:** app.customers
+- **Detail type:** CustomerIdSubmitted
+- **Target:** Step Function `customers-workflow`
+- **Status:** Enabled ✅
 
-aws events put-targets   --rule customer-scan-schedule   --targets "Id"="sfn1","Arn"="<STATE_MACHINE_ARN>","RoleArn"="<EVENTBRIDGE_TO_SFN_ROLE_ARN>","Input"='{"id":"scheduled-check"}'
-```
+📸 EventBridge Rule showing event pattern trigger:
 
-**Option B – API‑Driven (preferred)**
-Lambda (`put_customer_id`) publishes an event:
+📸 Rule list (showing the rule is enabled)  
+![EventBridge Rule List](./images/LIST%20RULES%20EVENT.png)
 
-```python
-import boto3, json
-events = boto3.client("events")
-events.put_events(Entries=[{
-  "Source": "customer.api",
-  "DetailType": "CustomerCreated",
-  "Detail": json.dumps({"id": id_value})
-}])
-```
+📸 Rule target (Step Functions workflow as target)  
+![EventBridge Target](./images/EVENT%20PATTERN.png)
 
 Rule pattern:
 
@@ -211,25 +243,35 @@ Rule pattern:
 
 ---
 
-## Monitoring & Alarms
+## 📊 Monitoring & Logs
 
-**Metrics**
+Monitoring was implemented using AWS CloudWatch to provide observability across the system:
 
-- Step Functions: `ExecutionsFailed`, `ExecutionsTimedOut`, `ExecutionsThrottled`
-- Lambda: `Errors`, `Throttles`
+- **CloudWatch Logs**:  
+   Enabled for all Lambda functions with structured JSON logging.  
+   📸 See example from `insert_id` Lambda function log group.
+  ![](./images/Log%20groups%20INSERT.png)
 
-**Alarm (example)**
+- **CloudWatch Metrics**:  
+  Enabled for the Step Functions workflow (`customers-workflow`) under the `AWS/States` namespace.  
+  Key metrics tracked:
 
-```bash
-aws cloudwatch put-metric-alarm   --alarm-name StepFunctionExecutionFailures   --metric-name ExecutionsFailed   --namespace AWS/States   --dimensions Name=StateMachineArn,Value=<STATE_MACHINE_ARN>   --statistic Sum --period 60 --evaluation-periods 1 --threshold 1   --comparison-operator GreaterThanOrEqualToThreshold   --alarm-actions <SNS_TOPIC_ARN>
-```
+  - `ExecutionsStarted` – number of workflow executions triggered
+  - `ExecutionsSucceeded` – successful workflow runs
+  - `ExecutionsFailed` – failed workflow runs  
+    📸 See screenshot of Metrics dashboard showing workflow executions.
+    ![](./images/METRIC.png)
+
+- **CloudWatch Alarms**:  
+  Configured on the `ExecutionsFailed` metric to notify when failures occur.  
+  ![](./images/ALARM.png)
+
+This setup ensures that both function-level logs and workflow-level metrics are monitored, with proactive alerting on failures.
 
 **EMAIL**
 
 - Topic: `arn:aws:sns:eu-central-1:<ACCOUNT_ID>:alerts` (confirm email subscription)
-  [](./images/EMAIL.png)
-  [](./images/ALARM.png)
-  [](./images/Alarms.png)
+  ![](./images/EMAIL.png)
 
 ---
 
@@ -247,33 +289,6 @@ Results:
 - Second run (same id) → LogEvent branch
 - Invalid input → Failed execution → Alarm → Email
 
-**End‑to‑End via API**
-
-```bash
-curl -X PUT "https://<api-id>.execute-api.eu-central-1.amazonaws.com/prod/customers/demo-123"   -H "x-api-key: <API_KEY>"
-```
-
----
-
-## Screenshots (Proof)
-
-Stored in `backend/docs/screenshots/`:
-
-- `workflow-insert.png`, `workflow-exists.png`
-- `eventbridge-rule.png`
-- `cloudwatch-logs.png`
-- `alarm-in-alarm.png`, `alarm-ok.png`
-- `sns-email.png`
-
----
-
-## Outputs
-
-- **State Machine ARN:** `arn:aws:states:eu-central-1:<ACCOUNT_ID>:stateMachine:customers-workflow`
-- **EventBridge Rules:** `customer-scan-schedule`, `customer-created-to-sfn`
-- **CloudFront URL (frontend):** `https://<cloudfront-domain>`
-- **API Gateway (prod):** `https://<api-id>.execute-api.eu-central-1.amazonaws.com/prod`
-
 ---
 
 ## Troubleshooting (Quick)
@@ -284,9 +299,3 @@ Stored in `backend/docs/screenshots/`:
 - **Validation** → `id` must be non-empty string
 
 ---
-
-## Known Limitations
-
-- API Key auth only (no IAM/OAuth)
-- Manual deployment (no CI/CD)
-- Simple workflow logic for demo
