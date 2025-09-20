@@ -186,8 +186,6 @@ done
 📸 Screenshot: Gateway Response (DEFAULT_5XX) showing `Access-Control-Allow-Origin`
 ![PUT ERROR](./images/5XX.png)
 
-![PUT ERROR](./images/PUT%20+%20CORS.png)
-
 ---
 
 ## Mission 3 – Event‑Driven Workflow
@@ -277,6 +275,13 @@ This setup ensures that both function-level logs and workflow-level metrics are 
 
 ## Testing & Validation
 
+Unit tests cover **all Lambda handlers and Step Functions components**, ensuring validation, error handling, and AWS integration logic work correctly.
+
+```
+pytest -q
+```
+
+![](./images/pytest.png)
 **Manual execution**
 
 ```bash
@@ -299,3 +304,10 @@ Results:
 - **Validation** → `id` must be non-empty string
 
 ---
+
+## 💰 Cost Control & Cleanup
+
+### Budgets
+
+A monthly **$0 cost budget** was created with **80%** and **100%** email alerts.
+![](./images/BUDGET.png)

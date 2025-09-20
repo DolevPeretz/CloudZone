@@ -135,4 +135,4 @@ repo-root/
 
 ### Main UI
 
-[](./docs/screenshots/CLIENT.png)
+[](./frontend/src/assets/Screenshot%202025-09-20%20222428.png)
